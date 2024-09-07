@@ -104,7 +104,7 @@
         <button id="toggle-ar">關閉AR鏡頭</button>
     </div>
     <a-scene id="ar-scene" embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-      <a-marker preset="hiro">
+      <a-marker preset="hiro", id="hiro-marker">
         <a-box position="0 0.5 0" material="color: blue;"></a-box>
       </a-marker>
       <a-entity camera></a-entity>
@@ -135,22 +135,49 @@
       const selectedPage = document.getElementById(pageId);
       selectedPage.classList.add('active');
       selectedPage.classList.remove('hidden');
-
       // 如果進入的是遊戲頁面，顯示 AR.js 場景；如果進入商城，隱藏 AR 場景並停止 Webcam
+      if (pageId === 'game-page') {
+        const button = document.getElementById('toggle-ar');
+        if (button.textContent === '關閉AR鏡頭') {
+            videoStart();
+        }
+      } else {
+        videoStop();
+      }
+      
+    }
+
+
+    function videoStart() {
+      arScene.style.display = 'block';
+      const videoElement = document.querySelector('video');
+      if (videoElement) {
+        videoElement.style.display = 'block';
+      }
+    }
+
+    function videoStop() {
+      arScene.style.display = 'none';
+      const videoElement = document.querySelector('video');
+      if (videoElement) {
+        videoElement.style.display = 'none';
+      }
     }
 
     document.getElementById('toggle-ar').addEventListener('click', function() {
-        const arScene = document.getElementById('ar-scene');
-        const button = document.getElementById('toggle-ar');
+      const button = document.getElementById('toggle-ar');
 
-        const videoElement = document.querySelector('video');
-        if (button.textContent === '開啟AR鏡頭') {
-            if (videoElement) videoElement.style.display = 'block';
-            button.textContent = '關閉AR鏡頭';
-        } else {
-            if (videoElement) videoElement.style.display = 'none';
-            button.textContent = '開啟AR鏡頭';
-        }
+      if (button.textContent === '開啟AR鏡頭') {
+          videoStart();
+          button.textContent = '關閉AR鏡頭';
+      } else {
+          videoStop();
+          button.textContent = '開啟AR鏡頭';
+      }
+    });
+
+    document.querySelector('#hiro-marker').addEventListener('markerFound', () => {
+      console.log('Marker found!');
     });
 
     // 停止 AR.js 並關閉攝像頭
