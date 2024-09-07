@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AR Puzzle Game</title>
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
+  <script
+    src="https://jeromeetienne.github.io/AR.js/three.js/examples/marker-training/threex-arpatternfile.js"></script>
   <style>
-    body, html {
+    body,
+    html {
       margin: 0;
       padding: 0;
       overflow: hidden;
@@ -50,12 +54,14 @@
       margin-left: 150px;
       width: calc(100% - 150px);
       height: 100vh;
-      display: none; /* 頁面預設隱藏 */
+      display: none;
+      /* 頁面預設隱藏 */
     }
 
     /* 當前顯示頁面的內容 */
     .content.active {
-      display: block; /* 當前頁面顯示 */
+      display: block;
+      /* 當前頁面顯示 */
     }
 
     /* 進度條樣式 */
@@ -82,30 +88,59 @@
 
     /* AR.js場景樣式 */
     #ar-scene {
-    width: 80%; /* 設置寬度為80% */
-    height: 100vh; /* 設置高度為100vh */
-    margin: 0 auto; /* 使場景居中 */
+      width: 80%;
+      /* 設置寬度為80% */
+      height: 100vh;
+      /* 設置高度為100vh */
+      margin: 0 auto;
+      /* 使場景居中 */
     }
 
+    .container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .item {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .pagination {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .pagination button {
+      margin: 0 5px;
+    }
   </style>
 </head>
+
 <body>
 
   <!-- 左側導航欄 -->
   <div id="sidebar">
-    <button class="nav-button" onclick="showPage('game-page')">遊戲頁面</button>
+    <button class="nav-button" onclick="showPage('game-page')">象山實境解謎</button>
     <button class="nav-button" onclick="showPage('shop-page')">商城</button>
+    <button class="nav-button" onclick="showPage('create-page')">創作</button>
   </div>
 
   <!-- 遊戲頁面內容 -->
   <div id="game-page" class="content active"> <!-- 初始顯示的頁面 -->
     <div id="progress">
-        目前進度：關卡 1
-        <button id="toggle-ar">關閉AR鏡頭</button>
+      目前進度：關卡 1
+      <button id="toggle-ar">關閉AR鏡頭</button>
     </div>
-    <a-scene id="ar-scene" embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-      <a-marker preset="hiro", id="hiro-marker">
-        <a-box position="0 0.5 0" material="color: blue;"></a-box>
+    <a-scene id="ar-scene" arjs="sourceType: webcam; debugUIEnabled: false;">
+
+      <a-marker preset="hiro" id="hiro-marker">
+        <a-image src="http://127.0.0.1:5000/data/image?name=assets/asset.jpg" scale="1 1 1" class="clickable"
+          rotation="-90 0 0" gesture-handler>
+        </a-image>
       </a-marker>
       <a-entity camera></a-entity>
     </a-scene>
@@ -114,12 +149,183 @@
   <!-- 商城頁面內容 -->
   <div id="shop-page" class="content">
     <div id="progress">
-        <h1>商城</h1>
-        <p>這裡是遊戲商城的內容。</p>
+      <h1>商城</h1>
+      <p>這裡是遊戲商城的內容。</p>
+      <div class="container" id="product-container">
+        <!-- 商品項目將在這裡生成 -->
+      </div>
+      <div class="pagination">
+        <button onclick="prevPage()">上一頁</button>
+        <span id="page-info"></span>
+        <button onclick="nextPage()">下一頁</button>
+      </div>
     </div>
   </div>
 
+  <div id="create-page" class="content">
+    <div id="progress">
+      <h2>創作頁面</h2>
+      <!-- 創作頁面的內容 -->
+      <form id="markerForm">
+        <label for="linkName"> The name of the link of Marker and Image </label>
+        <input type="text" id="linkName" accept="text"><br><br>
+
+        <label for="markerImage">Upload Marker Image (black & white):</label>
+        <input type="file" id="markerImage" accept="image/*"><br><br>
+
+        <label for="image">Upload Image:</label>
+        <input type="file" id="image" accept="image/*"><br><br>
+
+        <button type="submit">Save Marker-Image Mapping</button>
+      </form>
+
+      <!-- 顯示 marker 與圖片對應關係 -->
+      <h2>Configured Marker-Image Mappings:</h2>
+      <div id="markerList"></div>
+
+    </div>
+  </div>
+
+  <a-scene embedded arjs>
+    <!-- 动态生成的 marker 和图片会放在这里 -->
+    <a-assets id="marker-assets"></a-assets>
+
+    <a-marker id="marker-entity"></a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+
   <script>
+
+    function fetchMarkerList() {
+      fetch('http://localhost:5000/data/marker-list')
+        .then(response => response.json())
+        .then(data => {
+          const markerList = document.getElementById('markerList');
+          markerList.innerHTML = '';
+          data.forEach(item => {
+            const markerItem = document.createElement('div');
+            markerItem.innerHTML = `
+              <p>Marker: <img src="http://127.0.0.1:5000/data/image?name=${item.marker}" width="100"></p>
+              <p>Image: <img src="http://127.0.0.1:5000/data/image?name=${item.image}" width="100"></p>
+            `;
+            markerList.appendChild(markerItem);
+          });
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    document.getElementById('markerForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const linkName = document.getElementById('linkName').value;
+      const fileInput = document.getElementById('markerImage');
+      const file = fileInput.files[0];
+      const imageInput = document.getElementById('image');
+      const image = imageInput.files[0];
+
+      if (linkName && file && image) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const imageURL = e.target.result;
+
+          // 使用 THREEx.ArPatternFile 將圖片轉為 .patt
+          THREEx.ArPatternFile.encodeImageURL(imageURL, function (patternFileText) {
+            // 將生成的 .patt 文件發送到後端
+            const formData = new FormData();
+            formData.append('markerFile', file);
+            formData.append('patternFile', new Blob([patternFileText], { type: 'text/plain' }), 'marker.patt');
+            formData.append('image', image);
+            formData.append('linkName', linkName);
+
+            fetch('http://localhost:5000/data/upload-pattern', {
+              method: 'POST',
+              body: formData
+            })
+              .then(response => response.json())
+              .then(data => {
+                console.log('Marker uploaded:', data);
+              })
+              .catch(error => {
+                console.error('Error:', error);
+              });
+              fetchMarkerList();
+          });
+        };
+        reader.readAsDataURL(file);
+        
+      }
+      
+    });
+
+    fetchMarkerList();
+
+
+
+
+
+
+
+    let currentPage = 1;
+    const itemsPerPage = 8;
+    let products = [];
+
+    async function fetchProducts() {
+      const response = await fetch('http://127.0.0.1:5000/api/products');
+      products = await response.json();
+      renderProducts();
+    }
+
+    function renderProducts() {
+      const container = document.getElementById('product-container');
+      container.innerHTML = '';
+      const start = (currentPage - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      const pageProducts = products.slice(start, end);
+
+      pageProducts.forEach(product => {
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerHTML = `
+                  <h3>${product.name}</h3>
+                  <p>${product.description}</p>
+                  <p>價格: ${product.price}</p>
+              `;
+        container.appendChild(item);
+      });
+
+      updatePageInfo();
+    }
+
+    function updatePageInfo() {
+      const pageInfo = document.getElementById('page-info');
+      const totalPages = Math.ceil(products.length / itemsPerPage);
+      pageInfo.textContent = `頁數: ${currentPage} / ${totalPages}`;
+    }
+
+    function nextPage() {
+      const totalPages = Math.ceil(products.length / itemsPerPage);
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderProducts();
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        renderProducts();
+      }
+    }
+
+    fetchProducts();
+
+
+
+
+
     let arScene = document.querySelector('a-scene');
 
     // 顯示指定的頁面，隱藏其他頁面
@@ -139,12 +345,12 @@
       if (pageId === 'game-page') {
         const button = document.getElementById('toggle-ar');
         if (button.textContent === '關閉AR鏡頭') {
-            videoStart();
+          videoStart();
         }
       } else {
         videoStop();
       }
-      
+
     }
 
 
@@ -164,15 +370,15 @@
       }
     }
 
-    document.getElementById('toggle-ar').addEventListener('click', function() {
+    document.getElementById('toggle-ar').addEventListener('click', function () {
       const button = document.getElementById('toggle-ar');
 
       if (button.textContent === '開啟AR鏡頭') {
-          videoStart();
-          button.textContent = '關閉AR鏡頭';
+        videoStart();
+        button.textContent = '關閉AR鏡頭';
       } else {
-          videoStop();
-          button.textContent = '開啟AR鏡頭';
+        videoStop();
+        button.textContent = '開啟AR鏡頭';
       }
     });
 
@@ -184,4 +390,5 @@
   </script>
 
 </body>
+
 </html>
