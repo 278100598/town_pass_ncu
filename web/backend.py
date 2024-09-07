@@ -33,10 +33,10 @@ def upload_pattern():
     linkName = request.form.get('linkName')
     
     if markerFile and image and linkName and patternFile:
-        patternFile.save(f"assets/patterns/{patternFile.filename}")
+        patternFile.save(f"assets/patterns/{linkName}")
         image.save(f"assets/images/{image.filename}")
-        markerFile.save(f"assets/images/{patternFile.filename}")
-        LINK[linkName] = {'pattern': patternFile.filename, 'image': image.filename, 'marker': markerFile.filename}
+        markerFile.save(f"assets/images/{markerFile.filename}")
+        LINK[linkName] = {'pattern': linkName, 'image': image.filename, 'marker': markerFile.filename}
         return jsonify({'status': 'success'}), 200
     else:
         return jsonify({'status': 'error', 'message': 'No pattern file uploaded'}), 400

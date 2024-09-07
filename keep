@@ -182,64 +182,61 @@
     <button class="nav-button" onclick="showPage('create-page')">創作</button>
   </div>
 
-
+  
   <div id="ar-page" class="content"> <!-- 初始顯示的頁面 -->
-    <div id="progress">
-      目前進度：關卡 <span id="level">1</span>
-      <button id="toggle-ar">關閉AR鏡頭</button>
-      <input id="name" type="text" placeholder="輸入下一關地點">
-      <button id="submit">提交</button><br>
-      <div id="level1" style="display: none;">
-        <img src="https://i.imgur.com/z581v6H.jpeg" style="height: 500px;">
-        (6個字)
-      </div>
-      <div id="level2" style="display: none;">
-        請找到捷運象山三號出口的二維碼並掃描，完成拼圖後猜出下一關地點(5個字)
-        <div id="puzzle" style="display: none;">
-          <h1>Puzzle Game</h1>
-          <div id="board"></div>
-          <p id="status"></p>
+    <div id="progress" >
+        目前進度：關卡 <span id="level">1</span>
+        <button id="toggle-ar">關閉AR鏡頭</button>
+        <input id="name" type="text" placeholder="輸入下一關地點">
+        <button id="submit">提交</button><br>
+        <div id="level1" style="display: none;">
+            <img src="https://i.imgur.com/z581v6H.jpeg" style="height: 500px;">
+            (6個字)
         </div>
-      </div>
-      <div id="level3" style="display: none;">
-        請找到象山登山口的二維碼並掃描，觀看影象後猜出下一關地點(3個字)
-      </div>
-      <div id="level4" style="display: none;">
-        請找到一線天的二維碼並掃描，觀看影象後猜出密碼(rgb)
-      </div>
-      <div id="level5" style="display: none;">
-        <div id="win" style="display: none;">恭喜通關！</div>
-      </div>
+        <div id="level2" style="display: none;">
+            請找到捷運象山三號出口的二維碼並掃描，完成拼圖後猜出下一關地點(5個字)
+            <div id="puzzle" style="display: none;">
+                <h1>Puzzle Game</h1>
+                <div id="board"></div>
+                <p id="status"></p>
+            </div>
+        </div>
+        <div id="level3" style="display: none;">
+            請找到象山登山口的二維碼並掃描，觀看影象後猜出下一關地點(3個字)
+        </div>
+        <div id="level4" style="display: none;">
+            請找到一線天的二維碼並掃描，觀看影象後猜出密碼(rgb)
+        </div>
+        <div id="level5" style="display: none;">
+            <div id="win" style="display: none;">恭喜通關！</div>
+        </div>
     </div>
   </div>
 
+  
+  <a-scene id="ar-scene" embedded arjs="sourceType: webcam; debugUIEnabled: false;"></a-scene>
+    <a-marker preset="hiro" id="hiro-marker">
+    </a-marker>
+    
+    <!-- 第一個 marker 和對應的 GLB 模型 -->
+    <a-marker type="pattern" url="http://127.0.0.1:5000/data/image?name=pattern.patt" id="pattern">
+      <a-entity gltf-model="http://127.0.0.1:5000/data/image?name=model.glb" scale="0.5 0.5 0.5" position="0 0 0"></a-entity>
+    </a-marker>
 
-  <a-scene id="ar-scene" embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-  <a-marker preset="hiro" id="hiro-marker">
-  </a-marker>
-
-  <!-- 第一個 marker 和對應的 GLB 模型 -->
-  <a-marker type="pattern" url="http://127.0.0.1:5000/data/image?name=pattern.patt" id="pattern">
-    <a-entity gltf-model="http://127.0.0.1:5000/data/image?name=model.glb" scale="0.5 0.5 0.5"
-      position="0 0 0"></a-entity>
-  </a-marker>
-
-  <a-marker type="pattern" url="http://127.0.0.1:5000/data/image?name=pattern2.patt" id="pattern2">
-    <a-entity gltf-model="http://127.0.0.1:5000/data/image?name=model3.glb" scale="0.5 0.5 0.5"
-      position="0 0 0"></a-entity>
-  </a-marker>
-
-  <!-- 第二個 marker 和對應的 GLB 模型 -->
-  <a-marker preset="kanji" id="pattern2">
-    <a-entity gltf-model="http://127.0.0.1:5000/data/image?name=model2.glb" scale="0.5 0.5 0.5"
-      position="0 0 0"></a-entity>
-  </a-marker>
-  <a-entity camera></a-entity>
+    <a-marker type="pattern" url="http://127.0.0.1:5000/data/image?name=pattern2.patt" id="pattern2">
+      <a-entity gltf-model="http://127.0.0.1:5000/data/image?name=model3.glb" scale="0.5 0.5 0.5" position="0 0 0"></a-entity>
+    </a-marker>
+    
+    <!-- 第二個 marker 和對應的 GLB 模型 -->
+    <a-marker preset="kanji" id="pattern2">
+      <a-entity gltf-model="http://127.0.0.1:5000/data/image?name=model2.glb" scale="0.5 0.5 0.5" position="0 0 0"></a-entity>
+    </a-marker>
+    <a-entity camera></a-entity>
   </a-scene>
 
+  
 
-
-
+  
   <!-- 商城頁面內容 -->
   <div id="shop-page" class="content">
     <div id="progress">
@@ -518,44 +515,44 @@
 
     }
 
-    document.getElementById('submit').addEventListener('click', function () {
+    document.getElementById('submit').addEventListener('click', function() {
       if (level == 1) {
         if (document.getElementById('name').value == '捷運象山三號') {
-          document.getElementById(`level${level}`).style.display = 'none';
-          level++;
-          document.getElementById('level').innerHTML = level;
-          document.getElementById(`level${level}`).style.display = 'block';
+            document.getElementById(`level${level}`).style.display = 'none';
+            level++;
+            document.getElementById('level').innerHTML = level;
+            document.getElementById(`level${level}`).style.display = 'block';
         } else {
-          alert('答案錯誤');
+            alert('答案錯誤');
         }
       } else if (level == 2) {
         if (document.getElementById('name').value == '四獸山象山') {
-          document.getElementById(`level${level}`).style.display = 'none';
-          level++;
-          document.getElementById('level').innerHTML = level;
-          document.getElementById(`level${level}`).style.display = 'block';
+            document.getElementById(`level${level}`).style.display = 'none';
+            level++;
+            document.getElementById('level').innerHTML = level;
+            document.getElementById(`level${level}`).style.display = 'block';
         } else {
-          alert('答案錯誤');
+            alert('答案錯誤');
         }
       } else if (level == 3) {
         if (document.getElementById('name').value == '一線天') {
-          document.getElementById(`level${level}`).style.display = 'none';
-          level++;
-          document.getElementById('level').innerHTML = level;
-          document.getElementById(`level${level}`).style.display = 'block';
+            document.getElementById(`level${level}`).style.display = 'none';
+            level++;
+            document.getElementById('level').innerHTML = level;
+            document.getElementById(`level${level}`).style.display = 'block';
         } else {
-          alert('答案錯誤');
+            alert('答案錯誤');
         }
       } else if (level == 4) {
         if (document.getElementById('name').value == '184') {
-          document.getElementById(`level${level}`).style.display = 'none';
-          level++;
-          document.getElementById('level').innerHTML = level;
-          document.getElementById(`level${level}`).style.display = 'block';
+            document.getElementById(`level${level}`).style.display = 'none';
+            level++;
+            document.getElementById('level').innerHTML = level;
+            document.getElementById(`level${level}`).style.display = 'block';
         } else {
-          alert('答案錯誤');
+            alert('答案錯誤');
         }
-      }
+      } 
     });
 
     var rows = 4;
@@ -566,57 +563,57 @@
     var correctOrder = [];
     var pieces = [];
     var url = ["https://imgur.com/UOgrReE.jpeg", "https://imgur.com/gd2abMb.jpeg", "https://imgur.com/QiprobU.jpeg", "https://imgur.com/mt5v8I0.jpeg",
-      "https://imgur.com/H26dRDe.jpeg", "https://imgur.com/4ibx1uj.jpeg", "https://imgur.com/EX8h4Dl.jpeg", "https://imgur.com/m5FXSp7.jpeg",
-      "https://imgur.com/7GaKIrg.jpeg", "https://imgur.com/lRHlNsW.jpeg", "https://imgur.com/Kshi9Sa.jpeg", "https://imgur.com/wR22QKv.jpeg",
-      "https://imgur.com/c2Tk7lH.jpeg", "https://imgur.com/4lXRTKI.jpeg", "https://imgur.com/kGal5qZ.jpeg", "https://imgur.com/bt4xGDW.jpeg"]
+               "https://imgur.com/H26dRDe.jpeg", "https://imgur.com/4ibx1uj.jpeg", "https://imgur.com/EX8h4Dl.jpeg", "https://imgur.com/m5FXSp7.jpeg",
+               "https://imgur.com/7GaKIrg.jpeg", "https://imgur.com/lRHlNsW.jpeg", "https://imgur.com/Kshi9Sa.jpeg", "https://imgur.com/wR22QKv.jpeg",
+               "https://imgur.com/c2Tk7lH.jpeg", "https://imgur.com/4lXRTKI.jpeg", "https://imgur.com/kGal5qZ.jpeg", "https://imgur.com/bt4xGDW.jpeg"]
 
     function initBoard() {
-      board = document.getElementById("board");
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < columns; c++) {
-          let tile = document.createElement("img");
-          tile.classList.add("img");
-          tile.src = "https://imgur.com/cwjnyoW.jpeg"; // Initially blank
+        board = document.getElementById("board");
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < columns; c++) {
+                let tile = document.createElement("img");
+                tile.classList.add("img");
+                tile.src = "https://imgur.com/cwjnyoW.jpeg"; // Initially blank
 
-          tile.setAttribute("data-value", r * columns + c + 1); // Store position in data-value
-          tile.addEventListener("dragstart", dragStart);
-          tile.addEventListener("dragover", dragOver);
-          tile.addEventListener("dragenter", dragEnter);
-          tile.addEventListener("dragleave", dragLeave);
-          tile.addEventListener("drop", dragDrop);
-          tile.addEventListener("dragend", dragEnd);
+                tile.setAttribute("data-value", r * columns + c + 1); // Store position in data-value
+                tile.addEventListener("dragstart", dragStart);
+                tile.addEventListener("dragover", dragOver);
+                tile.addEventListener("dragenter", dragEnter);
+                tile.addEventListener("dragleave", dragLeave);
+                tile.addEventListener("drop", dragDrop);
+                tile.addEventListener("dragend", dragEnd);
 
-          correctOrder.push(tile.src);
-          board.append(tile);
+                correctOrder.push(tile.src);
+                board.append(tile);
+            }
         }
-      }
     }
 
     // Shuffle pieces and display them
     function shufflePieces() {
-      for (let i = 0; i < rows * columns; i++) {
-        pieces.push(i);
-      }
-      pieces.sort(() => Math.random() - 0.5);
+        for (let i = 0; i < rows * columns; i++) {
+            pieces.push(i);
+        }
+        pieces.sort(() => Math.random() - 0.5);
 
-      let pieceTiles = document.querySelectorAll("#board img");
-      for (let i = 0; i < pieceTiles.length; i++) {
-        let randomPiece = pieces[i];
-        pieceTiles[i].src = url[randomPiece]; // Change to shuffled images
-        pieceTiles[i].setAttribute("data-value", randomPiece);
-      }
+        let pieceTiles = document.querySelectorAll("#board img");
+        for (let i = 0; i < pieceTiles.length; i++) {
+            let randomPiece = pieces[i];
+            pieceTiles[i].src = url[randomPiece]; // Change to shuffled images
+            pieceTiles[i].setAttribute("data-value", randomPiece);
+        }
     }
 
     function dragStart() {
-      currTile = this; // The tile that was clicked to drag
+        currTile = this; // The tile that was clicked to drag
     }
 
     function dragOver(e) {
-      e.preventDefault();
+        e.preventDefault();
     }
 
     function dragEnter(e) {
-      e.preventDefault();
+        e.preventDefault();
     }
 
     function dragLeave() {
@@ -624,80 +621,80 @@
     }
 
     function dragDrop() {
-      otherTile = this;
+        otherTile = this;
     }
 
     function dragEnd() {
-      // Swap the images
-      let currImg = currTile.src;
-      let otherImg = otherTile.src;
-      currTile.src = otherImg;
-      otherTile.src = currImg;
+        // Swap the images
+        let currImg = currTile.src;
+        let otherImg = otherTile.src;
+        currTile.src = otherImg;
+        otherTile.src = currImg;
 
-      // Swap the data-value as well
-      let currValue = currTile.getAttribute("data-value");
-      let otherValue = otherTile.getAttribute("data-value");
-      currTile.setAttribute("data-value", otherValue);
-      otherTile.setAttribute("data-value", currValue);
+        // Swap the data-value as well
+        let currValue = currTile.getAttribute("data-value");
+        let otherValue = otherTile.getAttribute("data-value");
+        currTile.setAttribute("data-value", otherValue);
+        otherTile.setAttribute("data-value", currValue);
 
-      turns++;
+        turns++;
 
-      // Check if the player has won
-      checkWin();
+        // Check if the player has won
+        checkWin();
     }
 
     // Check if the current board configuration matches the correct order
     function checkWin() {
-      let tiles = document.querySelectorAll("#board img");
-      let isWin = true;
+        let tiles = document.querySelectorAll("#board img");
+        let isWin = true;
+        
+        for (let i = 0; i < tiles.length; i++) {
+            let tileValue = tiles[i].getAttribute("data-value");
+            if (tileValue != i.toString()) {
+                isWin = false;
+            }
+            else {
+                tiles[i].removeEventListener("dragstart", dragStart);
+                tiles[i].removeEventListener("dragover", dragOver);
+                tiles[i].removeEventListener("dragenter", dragEnter);
+                tiles[i].removeEventListener("dragleave", dragLeave);
+                tiles[i].removeEventListener("drop", dragDrop);
+                tiles[i].removeEventListener("dragend", dragEnd);
 
-      for (let i = 0; i < tiles.length; i++) {
-        let tileValue = tiles[i].getAttribute("data-value");
-        if (tileValue != i.toString()) {
-          isWin = false;
+                tiles[i].style.opacity = "0.5";
+            }
+
         }
-        else {
-          tiles[i].removeEventListener("dragstart", dragStart);
-          tiles[i].removeEventListener("dragover", dragOver);
-          tiles[i].removeEventListener("dragenter", dragEnter);
-          tiles[i].removeEventListener("dragleave", dragLeave);
-          tiles[i].removeEventListener("drop", dragDrop);
-          tiles[i].removeEventListener("dragend", dragEnd);
 
-          tiles[i].style.opacity = "0.5";
+        if (isWin) {
+            document.getElementById("status").innerText = "Congratulations! You solved the puzzle!";
+
+            // 禁用所有拖拽功能
+            tiles.forEach(tile => {
+                tile.removeEventListener("dragstart", dragStart);
+                tile.removeEventListener("dragover", dragOver);
+                tile.removeEventListener("dragenter", dragEnter);
+                tile.removeEventListener("dragleave", dragLeave);
+                tile.removeEventListener("drop", dragDrop);
+                tile.removeEventListener("dragend", dragEnd);
+            });
         }
-
-      }
-
-      if (isWin) {
-        document.getElementById("status").innerText = "Congratulations! You solved the puzzle!";
-
-        // 禁用所有拖拽功能
-        tiles.forEach(tile => {
-          tile.removeEventListener("dragstart", dragStart);
-          tile.removeEventListener("dragover", dragOver);
-          tile.removeEventListener("dragenter", dragEnter);
-          tile.removeEventListener("dragleave", dragLeave);
-          tile.removeEventListener("drop", dragDrop);
-          tile.removeEventListener("dragend", dragEnd);
-        });
-      }
     }
 
     var detected = false;
     document.querySelector("#hiro-marker").addEventListener("markerFound", () => {
-      if (level == 2 && detected == false) {
-        document.getElementById("puzzle").style.display = "block";
-        initBoard();
-        shufflePieces();
-        detected = true;
-      }
+        if(level == 2 && detected == false) {
+            document.getElementById("puzzle").style.display = "block";
+            initBoard();
+            shufflePieces();
+            detected = true;
+        }
     });
 
     document.querySelector("#pattern2").addEventListener("markerFound", () => {
-      if (level == 5) {
-        document.getElementById("win").style.display = "block";
-      }
+        if(level == 5) {
+            document.getElementById("win").style.display = "block";
+        }
     });
 
     function videoStart() {
@@ -716,7 +713,7 @@
       }
     }
 
-
+    
 
 
     function toggleAr() {
@@ -741,7 +738,7 @@
     document.getElementById('toggle-ar').addEventListener('click', toggleAr);
     document.getElementById('toggle-ar-2').addEventListener('click', toggleAr);
 
-
+    
 
     document.addEventListener('DOMContentLoaded', () => {
       console.log('Document is fully loaded and parsed');

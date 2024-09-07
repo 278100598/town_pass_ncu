@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:town_pass/gen/assets.gen.dart';
-
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'webview_page.dart';
 // 先於 MyServiceItemId enum 加入新服務；
 // 再在 MyServiceIdExt 擴充中加入該服務的 MyServiceItem 物件。
 //
@@ -33,6 +34,25 @@ enum MyServiceItemId {
 }
 
 extension MyServiceIdExt on MyServiceItemId {
+  void openService(BuildContext context) {
+    final serviceItem = this.item;
+    if (serviceItem.destinationUrl.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => WebViewPage(
+            url: serviceItem.destinationUrl,
+            title: serviceItem.title,
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('此服務暫無有效連結')),
+      );
+    }
+  }
+  
   MyServiceItem get item {
     return switch (this) {
       MyServiceItemId.dedicatedLine => MyServiceItem(
@@ -176,11 +196,11 @@ extension MyServiceIdExt on MyServiceItemId {
           destinationUrl: '',
         ),
       MyServiceItemId.ncu => MyServiceItem(
-          title: '6',
-          description: '動物園區資訊導覽、線上地圖',
+          title: 'AR-GAME 象山實境解謎',
+          description: 'AR + 實境解謎遊戲',
           icon: Assets.svg.ncuTest.svg(),
           category: MyServiceCategory.explore,
-          destinationUrl: 'https://www.ncu.edu.tw/tw/',
+          destinationUrl: 'https://test-f4d83.web.app/',
         ),
     };
   }
