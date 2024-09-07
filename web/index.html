@@ -1,38 +1,160 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="$FLUTTER_BASE_HREF">
-
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR Puzzle Game</title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
 
-  <!-- iOS meta tags & icons -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="town_pass_ncu">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+    /* 左側導航欄 */
+    #sidebar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 150px;
+      background-color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 20px;
+      z-index: 10;
+    }
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+    /* 導航按鈕樣式 */
+    .nav-button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      color: white;
+      background-color: #444;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+    }
 
-  <title>town_pass_ncu</title>
-  <link rel="manifest" href="manifest.json">
+    .nav-button:hover {
+      background-color: #555;
+    }
+
+    /* 內容區域 */
+    .content {
+      margin-left: 150px;
+      width: calc(100% - 150px);
+      height: 100vh;
+      display: none; /* 頁面預設隱藏 */
+    }
+
+    /* 當前顯示頁面的內容 */
+    .content.active {
+      display: block; /* 當前頁面顯示 */
+    }
+
+    /* 進度條樣式 */
+    #progress {
+      position: absolute;
+      top: 20px;
+      left: 170px;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 10px;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+      z-index: 10;
+    }
+
+    /* 隱藏 A-Frame AR 畫面 */
+    #game-page a-scene {
+      display: block;
+    }
+
+    /* 當頁面切換時，隱藏 AR 畫面 */
+    #game-page.hidden a-scene {
+      display: none;
+    }
+
+    /* AR.js場景樣式 */
+    #ar-scene {
+    width: 80%; /* 設置寬度為80% */
+    height: 100vh; /* 設置高度為100vh */
+    margin: 0 auto; /* 使場景居中 */
+    }
+
+  </style>
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+
+  <!-- 左側導航欄 -->
+  <div id="sidebar">
+    <button class="nav-button" onclick="showPage('game-page')">遊戲頁面</button>
+    <button class="nav-button" onclick="showPage('shop-page')">商城</button>
+  </div>
+
+  <!-- 遊戲頁面內容 -->
+  <div id="game-page" class="content active"> <!-- 初始顯示的頁面 -->
+    <div id="progress">
+        目前進度：關卡 1
+        <button id="toggle-ar">關閉AR鏡頭</button>
+    </div>
+    <a-scene id="ar-scene" embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+      <a-marker preset="hiro">
+        <a-box position="0 0.5 0" material="color: blue;"></a-box>
+      </a-marker>
+      <a-entity camera></a-entity>
+    </a-scene>
+  </div>
+
+  <!-- 商城頁面內容 -->
+  <div id="shop-page" class="content">
+    <div id="progress">
+        <h1>商城</h1>
+        <p>這裡是遊戲商城的內容。</p>
+    </div>
+  </div>
+
+  <script>
+    let arScene = document.querySelector('a-scene');
+
+    // 顯示指定的頁面，隱藏其他頁面
+    function showPage(pageId) {
+      // 隱藏所有頁面
+      const pages = document.querySelectorAll('.content');
+      pages.forEach(page => {
+        page.classList.remove('active');  // 移除所有頁面的 active 類
+        page.classList.add('hidden');     // 將所有頁面隱藏
+      });
+
+      // 顯示所選的頁面
+      const selectedPage = document.getElementById(pageId);
+      selectedPage.classList.add('active');
+      selectedPage.classList.remove('hidden');
+
+      // 如果進入的是遊戲頁面，顯示 AR.js 場景；如果進入商城，隱藏 AR 場景並停止 Webcam
+    }
+
+    document.getElementById('toggle-ar').addEventListener('click', function() {
+        const arScene = document.getElementById('ar-scene');
+        const button = document.getElementById('toggle-ar');
+
+        const videoElement = document.querySelector('video');
+        if (button.textContent === '開啟AR鏡頭') {
+            if (videoElement) videoElement.style.display = 'block';
+            button.textContent = '關閉AR鏡頭';
+        } else {
+            if (videoElement) videoElement.style.display = 'none';
+            button.textContent = '開啟AR鏡頭';
+        }
+    });
+
+    // 停止 AR.js 並關閉攝像頭
+  </script>
+
 </body>
 </html>
