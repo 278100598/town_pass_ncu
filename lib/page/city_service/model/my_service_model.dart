@@ -28,6 +28,7 @@ enum MyServiceItemId {
   library,
   locationSearch,
   zoo,
+  ncu,
   ;
 }
 
@@ -173,6 +174,13 @@ extension MyServiceIdExt on MyServiceItemId {
           icon: Assets.svg.iconZoo24.svg(),
           category: MyServiceCategory.explore,
           destinationUrl: '',
+        ),
+      MyServiceItemId.ncu => MyServiceItem(
+          title: '6',
+          description: '動物園區資訊導覽、線上地圖',
+          icon: Assets.svg.ncuTest.svg(),
+          category: MyServiceCategory.explore,
+          destinationUrl: 'https://www.ncu.edu.tw/tw/',
         ),
     };
   }
