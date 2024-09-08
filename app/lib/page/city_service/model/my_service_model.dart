@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:town_pass/gen/assets.gen.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'webview_page.dart';
+/*import 'webview_page.dart';*/
 // 先於 MyServiceItemId enum 加入新服務；
 // 再在 MyServiceIdExt 擴充中加入該服務的 MyServiceItem 物件。
 //
@@ -34,7 +34,7 @@ enum MyServiceItemId {
 }
 
 extension MyServiceIdExt on MyServiceItemId {
-  void openService(BuildContext context) {
+  /*void openService(BuildContext context) {
     final serviceItem = this.item;
     if (serviceItem.destinationUrl.isNotEmpty) {
       Navigator.push(
@@ -51,7 +51,7 @@ extension MyServiceIdExt on MyServiceItemId {
         SnackBar(content: Text('此服務暫無有效連結')),
       );
     }
-  }
+  }*/
   
   MyServiceItem get item {
     return switch (this) {

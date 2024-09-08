@@ -219,19 +219,19 @@
   </a-marker>
 
   <!-- 第一個 marker 和對應的 GLB 模型 -->
-  <a-marker type="pattern" url="http://127.0.0.1:5000/data/image?name=pattern.patt" id="pattern">
-    <a-entity gltf-model="http://127.0.0.1:5000/data/image?name=model.glb" scale="0.5 0.5 0.5"
+  <a-marker type="pattern" url="http://192.168.40.1:5000/data/image?name=pattern.patt" id="pattern">
+    <a-entity gltf-model="http://192.168.40.1:5000/data/image?name=model.glb" scale="0.5 0.5 0.5"
       position="0 0 0"></a-entity>
   </a-marker>
 
-  <a-marker type="pattern" url="http://127.0.0.1:5000/data/image?name=pattern2.patt" id="pattern2">
-    <a-entity gltf-model="http://127.0.0.1:5000/data/image?name=model3.glb" scale="0.5 0.5 0.5"
+  <a-marker type="pattern" url="http://192.168.40.1:5000/data/image?name=pattern2.patt" id="pattern2">
+    <a-entity gltf-model="http://192.168.40.1:5000/data/image?name=model3.glb" scale="0.5 0.5 0.5"
       position="0 0 0"></a-entity>
   </a-marker>
 
   <!-- 第二個 marker 和對應的 GLB 模型 -->
   <a-marker preset="kanji" id="pattern2">
-    <a-entity gltf-model="http://127.0.0.1:5000/data/image?name=model2.glb" scale="0.5 0.5 0.5"
+    <a-entity gltf-model="http://192.168.40.1:5000/data/image?name=model2.glb" scale="0.5 0.5 0.5"
       position="0 0 0"></a-entity>
   </a-marker>
   <a-entity camera></a-entity>
@@ -329,11 +329,11 @@
             markerEntity.setAttribute('class', 'kill clickable');
             markerEntity.setAttribute('preset', 'custom');
             //markerEntity.setAttribute('id',"test-marker");
-            markerEntity.setAttribute('url', `http://127.0.0.1:5000/data/image?name=${marker.pattern}`);
+            markerEntity.setAttribute('url', `http://192.168.40.1:5000/data/image?name=${marker.pattern}`);
 
             // Create an image entity associated with the marker
             const imageEntity = document.createElement('a-image');
-            imageEntity.setAttribute('src', `http://127.0.0.1:5000/data/image?name=${marker.image}`);
+            imageEntity.setAttribute('src', `http://192.168.40.1:5000/data/image?name=${marker.image}`);
             imageEntity.setAttribute('position', '0 0.5 0');
             markerEntity.setAttribute('rotation', '0 0 0');
             imageEntity.setAttribute('width', '1');
@@ -362,8 +362,8 @@
           data.forEach(item => {
             const markerItem = document.createElement('li');
             markerItem.innerHTML = `
-              <p>Marker: <img src="http://127.0.0.1:5000/data/image?name=${item.marker}" width="100"></p>
-              <p>Image: <img src="http://127.0.0.1:5000/data/image?name=${item.image}" width="100"></p>
+              <p>Marker: <img src="http://192.168.40.1:5000/data/image?name=${item.marker}" width="100"></p>
+              <p>Image: <img src="http://192.168.40.1:5000/data/image?name=${item.image}" width="100"></p>
             `;
             markerList.appendChild(markerItem);
 
@@ -431,7 +431,7 @@
     let products = [];
 
     async function fetchProducts() {
-      const response = await fetch('http://127.0.0.1:5000/api/products');
+      const response = await fetch('http://192.168.40.1:5000/api/products');
       products = await response.json();
       renderProducts();
     }

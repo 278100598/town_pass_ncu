@@ -64,6 +64,11 @@ class TPWebView extends StatelessWidget {
         controller: appBarController,
       ),
       body: TPInAppWebView(
+        onPermissionRequest: (controller, request) async {
+          return PermissionResponse(
+            resources: request.resources,
+            action: PermissionResponseAction.GRANT);
+        },
         onWebViewCreated: (controller) {
           webViewController.value = controller;
           controller.loadUrl(urlRequest: URLRequest(url: WebUri(url)));
